@@ -1,0 +1,118 @@
+/* PWA Install Prompt */
+.pwa-prompt {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    z-index: 10001;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    animation: slideUp 0.3s ease;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.pwa-prompt-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pwa-prompt-content img {
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.pwa-prompt-text {
+    flex: 1;
+}
+
+.pwa-prompt-text h3 {
+    color: var(--text-primary);
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.pwa-prompt-text p {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.pwa-prompt-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.pwa-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.pwa-btn.decline {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.pwa-btn.decline:hover {
+    background: var(--border-color);
+    color: var(--text-primary);
+}
+
+.pwa-btn.install {
+    background: var(--accent-green-dim);
+    color: white;
+    border: 1px solid var(--accent-green);
+}
+
+.pwa-btn.install:hover {
+    background: var(--accent-green);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .pwa-prompt-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .pwa-prompt-actions {
+        width: 100%;
+    }
+    
+    .pwa-btn {
+        flex: 1;
+    }
+}
+
+/* Brand with logo */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.brand img {
+    border-radius: 4px;
+    object-fit: cover;
+}
