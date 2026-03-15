@@ -1,38 +1,79 @@
 const ErrorHandler = {
+    errors: [],
+    maxLogs: 50,
+    
     handle(error, context = 'general') {
-        console.error(`[${context}] Error:`, error);
+        // Buat error object
+        const errorObj = {
+            id: Date.now() + Math.random().toString(36),
+            timestamp: new Date().toISOString(),
+            context,
+            message: error?.message || 'Unknown error',
+            stack: error?.stack,
+            url: window.location.href,
+            userAgent: navigator.userAgent
+        };
         
-        // Log ke storage untuk debugging
-        this.logError(error, context);
+        // Log ke console
+        console.error(`[${context}] Error:`, errorObj.message);
+        if (error?.stack) {
+            console.debug(error.stack);
+        }
         
-        // Tampilkan ke user jika perlu
-        if (error.message && !error.silent) {
-            uiManager.showToast(`Error: ${error.message}`, 'error');
+        // Simpan ke memory
+        this.errors.push(errorObj);
+        if (this.errors.length > this.maxLogs) {
+            this.errors.shift();
+        }
+        
+        // Simpan ke storage
+        this.saveToStorage(errorObj);
+        
+        // Tampilkan ke user (kecuali silent error)
+        if (error && !error.silent) {
+            this.showToUser(errorObj);
         }
         
         return {
             success: false,
-            error: error.message || 'Terjadi kesalahan',
-            context
+            error: errorObj.message,
+            context,
+            errorId: errorObj.id
         };
     },
     
-    logError(error, context) {
+    saveToStorage(errorObj) {
         try {
-            const logs = JSON.parse(localStorage.getItem('codeners_error_logs') || '[]');
-            logs.push({
-                timestamp: new Date().toISOString(),
-                context,
-                message: error.message,
-                stack: error.stack
-            });
+            const logs = STORAGE.load(STORAGE.KEYS.ERROR_LOGS, []);
+            logs.push(errorObj);
             
             // Simpan maksimal 50 log
             if (logs.length > 50) logs.shift();
             
-            localStorage.setItem('codeners_error_logs', JSON.stringify(logs));
+            STORAGE.save(STORAGE.KEYS.ERROR_LOGS, logs);
         } catch (e) {
-            console.error('Failed to log error:', e);
+            console.error('Failed to save error log:', e);
+        }
+    },
+    
+    showToUser(errorObj) {
+        // Jangan tampilkan terlalu banyak error dalam waktu singkat
+        if (this.lastShowTime && Date.now() - this.lastShowTime < 5000) {
+            return;
+        }
+        
+        this.lastShowTime = Date.now();
+        
+        let message = errorObj.message;
+        if (message.length > 100) {
+            message = message.substring(0, 100) + '...';
+        }
+        
+        // Gunakan uiManager jika tersedia
+        if (window.uiManager) {
+            uiManager.showToast(`Error: ${message}`, 'error');
+        } else {
+            alert(`Error: ${message}\nContext: ${errorObj.context}`);
         }
     },
     
@@ -44,14 +85,40 @@ const ErrorHandler = {
                 return this.handle(error, context);
             }
         };
+    },
+    
+    getLogs() {
+        return this.errors;
+    },
+    
+    getStorageLogs() {
+        return STORAGE.load(STORAGE.KEYS.ERROR_LOGS, []);
+    },
+    
+    clearLogs() {
+        this.errors = [];
+        STORAGE.remove(STORAGE.KEYS.ERROR_LOGS);
+    },
+    
+    // Method untuk testing
+    test() {
+        try {
+            throw new Error('Test error');
+        } catch (e) {
+            return this.handle(e, 'test');
+        }
     }
 };
 
-// Global error handler
+// Global error handlers
 window.addEventListener('error', (event) => {
     ErrorHandler.handle(event.error, 'uncaught');
+    return false;
 });
 
 window.addEventListener('unhandledrejection', (event) => {
     ErrorHandler.handle(event.reason, 'unhandledrejection');
 });
+
+// Export untuk debugging
+window.ErrorHandler = ErrorHandler;
