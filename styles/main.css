@@ -1,3 +1,366 @@
+:root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --border-color: #30363d;
+    --text-primary: #c9d1d9;
+    --text-secondary: #8b949e;
+    --accent-green: #2ea043;
+    --accent-green-dim: #238636;
+    --accent-red: #f85149;
+    --accent-yellow: #d29922;
+    --header-h: 55px;
+    --glider-h: 45px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Courier New', monospace;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Header */
+header {
+    height: var(--header-h);
+    background: var(--bg-secondary);
+    padding: 0 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--accent-green);
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    background: linear-gradient(45deg, var(--accent-green), #00ff41);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px rgba(46, 160, 67, 0.3);
+}
+
+.brand img {
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.btn-group {
+    display: flex;
+    gap: 6px;
+}
+
+button {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+button:hover {
+    background: var(--border-color);
+    border-color: var(--text-secondary);
+}
+
+/* Glider Tabs */
+.glider {
+    height: var(--glider-h);
+    background: var(--bg-secondary);
+    display: flex;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border-color);
+    z-index: 999;
+}
+
+.glider::-webkit-scrollbar {
+    height: 3px;
+}
+
+.glider::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+.tab {
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    border-right: 1px solid var(--border-color);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.tab.active {
+    background: var(--bg-tertiary);
+    color: var(--accent-green);
+    border-bottom: 2px solid var(--accent-green);
+}
+
+.tab i.ri-close-line {
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.tab i.ri-close-line:hover {
+    opacity: 1;
+    color: var(--accent-red);
+}
+
+/* Workspace */
+.workspace {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.pane {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100px;
+    transition: flex 0.3s;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.pane-bar {
+    background: var(--bg-secondary);
+    padding: 5px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.pane-title {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Editor */
+.editor-wrapper {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    background: var(--bg-primary);
+}
+
+#editing-area, #highlighting-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    tab-size: 4;
+    white-space: pre;
+    overflow: auto;
+    border: none;
+    outline: none;
+    font-family: 'Courier New', monospace;
+}
+
+#editing-area {
+    background: transparent;
+    color: transparent;
+    caret-color: var(--accent-green);
+    z-index: 10;
+    resize: none;
+}
+
+#editing-area::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.5;
+}
+
+#highlighting-area {
+    z-index: 5;
+    pointer-events: none;
+    background: var(--bg-primary);
+}
+
+/* Preview */
+#preview-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: white;
+}
+
+.sync-btn {
+    background: var(--accent-green-dim);
+    border-color: var(--accent-green);
+    color: white;
+}
+
+.sync-btn:hover {
+    background: var(--accent-green);
+}
+
+/* Modal */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 24px;
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.modal-title {
+    color: var(--accent-green);
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.modal-text {
+    color: var(--text-primary);
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.modal-btn {
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.modal-btn.cancel {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.modal-btn.cancel:hover {
+    background: var(--border-color);
+}
+
+.modal-btn.confirm {
+    background: var(--accent-red);
+    border: 1px solid var(--accent-red);
+    color: white;
+}
+
+.modal-btn.confirm:hover {
+    background: #ff6b6b;
+}
+
+/* Toast Notifications */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+}
+
+.toast {
+    background: var(--bg-secondary);
+    border-left: 4px solid var(--accent-green);
+    border-radius: 6px;
+    padding: 12px 20px;
+    margin-top: 10px;
+    color: var(--text-primary);
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s ease;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+}
+
+.toast.error {
+    border-left-color: var(--accent-red);
+}
+
+.toast.warning {
+    border-left-color: var(--accent-yellow);
+}
+
+.toast i {
+    font-size: 18px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
 /* PWA Install Prompt */
 .pwa-prompt {
     position: fixed;
@@ -89,7 +452,49 @@
     background: var(--accent-green);
 }
 
+/* Icon Colors */
+.ri-html5-fill { color: #e34c26; }
+.ri-css3-fill { color: #264de4; }
+.ri-javascript-fill { color: #f7df1e; }
+.ri-terminal-box-fill { color: #3572A5; }
+.ri-file-json-fill { color: #f7df1e; }
+
+/* Utility Classes */
+.expanded { flex: 5 !important; }
+.hidden { display: none !important; }
+
+/* Language Select */
+#lang-select {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    outline: none;
+}
+
+#lang-select:hover {
+    border-color: var(--accent-green);
+}
+
+#lang-select option {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
 /* Responsive */
+@media (max-width: 768px) {
+    .brand {
+        font-size: 14px;
+    }
+    
+    button {
+        padding: 4px 8px;
+    }
+}
+
 @media (max-width: 480px) {
     .pwa-prompt-content {
         flex-direction: column;
@@ -103,16 +508,13 @@
     .pwa-btn {
         flex: 1;
     }
-}
-
-/* Brand with logo */
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.brand img {
-    border-radius: 4px;
-    object-fit: cover;
+    
+    .btn-group {
+        gap: 4px;
+    }
+    
+    button {
+        padding: 4px 6px;
+        font-size: 12px;
+    }
 }
