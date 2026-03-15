@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
+    <title>Codeners - Multi-Language Code Editor & Sandbox PWA</title>
+    <meta name="title" content="Codeners - Multi-Language Code Editor & Sandbox PWA">
+    <meta name="description" content="Codeners adalah code editor profesional dengan dukungan multi-bahasa (HTML, CSS, JavaScript, Python, JSON) dan fitur preview real-time. Bisa digunakan offline sebagai PWA.">
+    <meta name="keywords" content="code editor, online editor, pwa, html editor, css editor, javascript editor, python editor, json editor, coding sandbox, codeners">
+    <meta name="author" content="Codeners">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://codeners.nett.to/">
+    <meta property="og:title" content="Codeners - Multi-Language Code Editor & Sandbox PWA">
+    <meta property="og:description" content="Code editor profesional dengan multi-bahasa dan preview real-time. Bisa digunakan offline.">
+    <meta property="og:image" content="https://codeners.nett.to/assets/logo.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Codeners">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://codeners.nett.to/">
+    <meta property="twitter:title" content="Codeners - Multi-Language Code Editor & Sandbox PWA">
+    <meta property="twitter:description" content="Code editor profesional dengan multi-bahasa dan preview real-time. Bisa digunakan offline.">
+    <meta property="twitter:image" content="https://codeners.nett.to/assets/logo.png">
+
+    <!-- Icons & Favicon -->
+    <link rel="icon" type="image/png" href="/assets/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+    <link rel="shortcut icon" href="/assets/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Codeners" />
+    <link rel="manifest" href="/assets/site.webmanifest" />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#2ea043">
+    <meta name="msapplication-TileColor" content="#2ea043">
+
+    <!-- CSS & Fonts -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    
+    <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <img src="/assets/logo.png" alt="Codeners Logo" width="24" height="24" style="border-radius: 4px;">
+            CODENERS
+        </div>
+        <div class="btn-group">
+            <button onclick="fileManager.triggerImport()" title="Import File"><i class="ri-file-upload-line"></i></button>
+            <button onclick="fileManager.exportFile()" title="Export File"><i class="ri-download-2-line"></i></button>
+            <button onclick="fileManager.addNewFile()" title="New File"><i class="ri-add-line"></i></button>
+            <button onclick="uiManager.showResetConfirm()" title="Reset All" style="color: #f85149;"><i class="ri-delete-bin-line"></i></button>
+        </div>
+    </header>
+
+    <div class="glider" id="glider"></div>
+
+    <div class="workspace">
+        <div id="pane-editor" class="pane">
+            <div class="pane-bar">
+                <span class="pane-title" id="file-label">EDITOR</span>
+                <div class="btn-group">
+                    <select id="lang-select" onchange="editor.changeLang()">
+                        <option value="html">HTML</option>
+                        <option value="css">CSS</option>
+                        <option value="javascript">JS</option>
+                        <option value="python">PY</option>
+                        <option value="json">JSON</option>
+                    </select>
+                    <button onclick="uiManager.toggleView('editor')" title="Expand Editor"><i class="ri-expand-up-down-line"></i></button>
+                </div>
+            </div>
+            <div class="editor-wrapper">
+                <textarea id="editing-area" spellcheck="false" oninput="editor.handleInput(event)" onscroll="editor.syncScroll()" onkeydown="editor.handleTabs(event)" placeholder="Tulis kode Anda di sini..."></textarea>
+                <pre id="highlighting-area"><code id="highlighting-content"></code></pre>
+            </div>
+        </div>
+
+        <div id="pane-preview" class="pane">
+            <div class="pane-bar">
+                <span class="pane-title">PREVIEW_OUTPUT</span>
+                <div class="btn-group">
+                    <button onclick="preview.render()" class="sync-btn">
+                        <i class="ri-flashlight-fill"></i> SYNC
+                    </button>
+                    <button onclick="uiManager.toggleView('preview')" title="Expand Preview"><i class="ri-expand-up-down-line"></i></button>
+                </div>
+            </div>
+            <iframe id="preview-frame" title="Preview"></iframe>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi -->
+    <div id="modal-overlay" class="overlay">
+        <div class="modal">
+            <div id="m-title" class="modal-title">SYSTEM</div>
+            <div id="m-text" class="modal-text">Message...</div>
+            <div class="modal-actions">
+                <button onclick="uiManager.closeModal()" class="modal-btn cancel">BATAL</button>
+                <button id="m-confirm" class="modal-btn confirm" style="display: none;">OKE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- PWA Install Prompt -->
+    <div id="pwa-prompt" class="pwa-prompt" style="display: none;">
+        <div class="pwa-prompt-content">
+            <img src="/assets/logo.png" alt="Codeners" width="48" height="48">
+            <div class="pwa-prompt-text">
+                <h3>Install Codeners</h3>
+                <p>Install aplikasi ini ke layar utama untuk akses lebih cepat dan penggunaan offline</p>
+            </div>
+            <div class="pwa-prompt-actions">
+                <button onclick="pwaManager.declineInstall()" class="pwa-btn decline">Nanti</button>
+                <button onclick="pwaManager.install()" class="pwa-btn install">Install</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="file-input" hidden accept=".html,.css,.js,.py,.json,.txt" onchange="fileManager.handleImport(event)">
+
+    <!-- Scripts -->
+    <script src="/js/utils/errorHandler.js"></script>
+    <script src="/js/utils/storage.js"></script>
+    <script src="/js/core/editor.js"></script>
+    <script src="/js/core/preview.js"></script>
+    <script src="/js/core/fileManager.js"></script>
+    <script src="/js/core/uiManager.js"></script>
+    <script src="/js/core/pwaManager.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/sw-register.js"></script>
+</body>
+</html>
